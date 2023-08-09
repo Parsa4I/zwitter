@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from rest_framework.authtoken.views import obtain_auth_token
 
 
 app_name = "accounts"
@@ -48,4 +47,6 @@ urlpatterns = [
     path("mute/<int:pk>/", views.MuteView.as_view(), name="mute"),
     # api
     path("get-token/", views.CustomObtainAuthToken.as_view()),
+    path("api-register/", views.UserRegisterAPIView.as_view()),
+    path("api-login/", views.UserLoginAPIView.as_view()),
 ]

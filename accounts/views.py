@@ -20,7 +20,12 @@ from utils import notify, add_view
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-from .serializers import CustomAuthTokenSerializer
+from .serializers import (
+    CustomAuthTokenSerializer,
+    UserRegisterSerializer,
+    UserLoginSerializer,
+)
+from rest_framework.views import APIView
 
 
 class UserRegisterView(View):
@@ -336,3 +341,28 @@ class CustomObtainAuthToken(ObtainAuthToken):
         user = serializer.validated_data["user"]
         token, created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key})
+
+
+class UserRegisterAPIView(APIView):
+    def post(self, request):
+        serializer = UserRegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            User.objects.create_user(
+                email=serializer.validated_data["email"],
+                password=serializer.validated_data["password"],
+            )
+            return Response(serializer.data)
+        return Response(serializer.error_messages)
+
+
+class UserLoginAPIView(APIView):
+    def post(self, request):
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            username = serializer.data.get("username", None)
+            password = serializer.data.get("password", None)
+            user = authenticate(request, email=username, password=password)
+            if user:
+                login(request, user)
+                return Response({"user": user.email})
+            return Response(serializer.error_messages)

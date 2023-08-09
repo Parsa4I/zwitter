@@ -25,3 +25,13 @@ class CustomAuthTokenSerializer(AuthTokenSerializer):
 
         attrs["user"] = user
         return attrs
+
+
+class UserRegisterSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)
+
+
+class UserLoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
