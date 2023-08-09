@@ -3,6 +3,12 @@ from rest_framework import serializers
 from .models import User
 
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ("email", "username", "phone_number", "is_active")
+
+
 class CustomAuthTokenSerializer(AuthTokenSerializer):
     username = serializers.CharField(label="Username or Email")
 

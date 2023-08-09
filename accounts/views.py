@@ -24,8 +24,10 @@ from .serializers import (
     CustomAuthTokenSerializer,
     UserRegisterSerializer,
     UserLoginSerializer,
+    UserSerializer,
 )
 from rest_framework.views import APIView
+from rest_framework import status
 
 
 class UserRegisterView(View):
@@ -347,12 +349,13 @@ class UserRegisterAPIView(APIView):
     def post(self, request):
         serializer = UserRegisterSerializer(data=request.data)
         if serializer.is_valid():
-            User.objects.create_user(
+            user = User.objects.create_user(
                 email=serializer.validated_data["email"],
                 password=serializer.validated_data["password"],
             )
-            return Response(serializer.data)
-        return Response(serializer.error_messages)
+            token = Token.objects.create(user=user)
+            return Response({"token": token.key})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginAPIView(APIView):
@@ -362,7 +365,9 @@ class UserLoginAPIView(APIView):
             username = serializer.data.get("username", None)
             password = serializer.data.get("password", None)
             user = authenticate(request, email=username, password=password)
-            if user:
-                login(request, user)
-                return Response({"user": user.email})
-            return Response(serializer.error_messages)
+            if username and password:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response(
+                    {"token": token.key, "user": UserSerializer(instance=user).data}
+                )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
