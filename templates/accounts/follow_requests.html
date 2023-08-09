@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>Follow Reqeusts</h1>
+{% for follow_request in follow_requests %}
+<h3 class="text-center">{{ follow_request.follower }}</h3>
+<div class="d-flex justify-content-center">
+  <a href="{% url 'accounts:accept_follow' follow_request.pk %}" class="m-1 btn btn-primary">Accept</a>
+  <a href="{% url 'accounts:decline_follow' follow_request.pk %}" class="m-1 btn btn-danger">Decline</a>
+</div>
+{% if not forloop.last %}
+<hr>
+{% endif %}
+{% empty %}
+<h3>You currently don't have any follow requests.</h3>
+{% endfor %}
+{% endblock %}

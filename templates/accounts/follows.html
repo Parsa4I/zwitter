@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+{% if followers %}
+<h1>{{ profile_user }}'s Followers</h1>
+{% else %}
+<h1>{{ profile_user }}'s Following</h1>
+{% endif %}
+
+{% for follow in follows %}
+
+{% if followers %}
+<h3 class="text-center"><a href="{{ follow.follower.get_absolute_url }}">{{ follow.follower }}</a></h3>
+{% else %}
+<a href="{{ follow.followed.get_absolute_url }}">
+  <h3>{{ follow.followed }}</h3>
+</a>
+{% if profile_user == user %}
+<a href="{% url 'accounts:follow' follow.followed.pk %}?next={{ request.get_full_path }}"
+  class="m-1 btn btn-danger">Unfollow</a>
+{% endif %}
+{% endif %}
+
+{% if not forloop.last %}
+<hr>
+{% endif %}
+
+{% empty %}
+<h2 class="text-center">Wow, Such empty :(</h2>
+{% endfor %}
+
+{% endblock %}

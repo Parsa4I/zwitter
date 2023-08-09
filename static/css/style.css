@@ -1,0 +1,21 @@
+.detail-button {
+    background: radial-gradient(circle, rgba(50, 4, 101, 1) 0%, rgba(89, 4, 126, 1) 99%);
+    border-color: rgba(50, 4, 101, 1);
+    transition-duration: 0.2s;
+}
+
+.detail-button:hover {
+    border-color: blueviolet;
+    background: radial-gradient(circle, rgba(89, 4, 126, 1) 0%, rgba(50, 4, 101, 1) 99%);
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4);
+    color: rgb(22, 1, 47);
+}
+
+.notif {
+    background: linear-gradient(180deg, rgba(61, 12, 115, 1) 0%, rgba(52, 8, 71, 1) 100%);
+    transition-duration: 0.2s;
+}
+
+.notif:hover {
+    background: radial-gradient(rgba(61, 12, 115, 1) 0%, rgba(52, 8, 71, 1) 100%);
+}

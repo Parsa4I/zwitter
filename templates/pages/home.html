@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>Zwitter Trends</h1>
+
+<div class="row justify-content-center container">
+  {% for tag in tags %}
+  <a href="{{ tag.get_absolute_url }}" class="btn btn-lg btn-primary detail-button col-lg-6 m-2 p-5">
+    #{{ tag.title }}
+    <hr> {{ tag.posts__count }} Posts
+  </a>
+  {% empty %}
+  <h2 class="text-center">Wow, Such empty :(</h2>
+  {% endfor %}
+</div>
+
+{% endblock %}

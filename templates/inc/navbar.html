@@ -1,0 +1,51 @@
+{% load static %}
+{% load new_notifs_count %}
+
+<nav class="px-5 py-3 navbar navbar-expand-lg navbar-dark text-dark"
+  style="background: radial-gradient(circle, rgba(107,21,145,1) 0%, rgba(61,12,115,1) 100%)">
+  <div class="container-fluid">
+
+    <img class="navbar-brand" src="{% static 'img/logo.png' %}" height="50px">
+    <a class="navbar-brand" href="{% url 'pages:home' %}">Zwitter</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'pages:home' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'posts:posts' %}">Posts</a>
+        </li>
+        {% if not user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:user_register' %}">Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:login' %}">Login</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:profile' user.pk %}">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'posts:create_post' %}">Add Post</a>
+        </li>
+        <li class="nav-item pull-right">
+          <a class="nav-link" href="{% url 'notifs:notifs_list' %}">
+            {% if user|new_notifs_count > 0 %} <b>Notifications ({{ user|new_notifs_count }})</b>
+            {% else %}
+            Notifications
+            {% endif %}</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
+        </li>
+        {% endif %}
+    </div>
+  </div>
+</nav>

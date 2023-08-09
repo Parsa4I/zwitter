@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block body %}
+{% if reply %}
+<h1>Replying to <a href="{{ post.get_absolute_url }}">{{ post.user }}</a></h1>
+{% else %}
+<h1>New Post</h1>
+{% endif %}
+<form action="" method="post">
+  {% csrf_token %}
+  {{ form|crispy }}
+  <button name="attach-pic" class="btn btn-info" type="submit">Attach Picture</button>
+  <button name="attach-vid" class="btn btn-info" type="submit">Attach Video</button>
+  <button name="post-body" class="btn btn-primary" type="submit">Post</button>
+</form>
+{% endblock %}

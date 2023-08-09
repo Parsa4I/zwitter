@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>Posts</h1>
+{% if tag %}
+<a href="{{ tag.get_absolute_url }}">#{{ tag }} </a><span> ({{ tag_count }} Posts)</span>
+{% endif %}
+
+{% include 'inc/posts.html' %}
+
+{% endblock %}

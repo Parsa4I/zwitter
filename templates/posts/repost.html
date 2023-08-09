@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+
+<br>
+<h4>Are you sure you want to repost <a target="_blank" href="{{ post.get_absolute_url }}">this post</a>
+  from {{ post.user }}?</h4>
+<form action="" method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-primary detail-button col-2 m-1" name="yes">Yes</button>
+  <button type="submit" class="btn btn-primary detail-button col-2 m-1" name="no">No</button>
+</form>
+
+{% endblock %}

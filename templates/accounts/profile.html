@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<h1>{{ profile_user }}</h1>
+
+<h4>
+  <a class="text-reset text-decoration-none" href="{% url 'accounts:followers' profile_user.pk %}"><u>Followers</u>
+    <span class="text-secondary"> {{ followers.count }}</span></a>
+</h4>
+<h4>
+  <a class="text-reset text-decoration-none" href="{% url 'accounts:following' profile_user.pk %}"><u>Following</u>
+    <span class="text-secondary">{{ following.count }}</span></a>
+</h4>
+
+<br>
+
+{% if profile_user == user %}
+<a class="btn btn-primary detail-button" href="{% url 'posts:create_post' %}">Add Post</a>
+<a class="btn btn-primary detail-button" href="{% url 'accounts:password_reset'%}">Change Password</a>
+<a class="btn btn-primary detail-button" href="{% url 'accounts:change_username'%}">Change Username</a>
+{% if follow_requests %}
+<br><br>
+<p>You have new follow requests. <a href="{% url 'accounts:follow_requests' %}">Check them out!</a></p>
+{% endif %}
+{% elif user.is_authenticated %}
+
+{% if is_followed %}
+<a class="btn btn-primary detail-button btn-lg" href="{% url 'accounts:follow' profile_user.pk %}">Unfollow</a>
+<a class="btn btn-primary detail-button btn-lg" href="{% url 'accounts:mute' profile_user.pk %}">
+  {% if is_mute %} Unmute {% else %} Mute {% endif %}</a>
+{% elif is_requested %}
+<a class="btn btn-primary detail-button btn-lg" href="{% url 'accounts:follow' profile_user.pk %}">Cancel follow
+  request</a>
+{% else %}
+<a class="btn btn-primary detail-button btn-lg" href="{% url 'accounts:follow' profile_user.pk %}">Follow</a>
+{% endif %}
+
+{% endif %}
+<hr>
+<h2>{% if profile_user == user %} Your {% else %} {{ profile_user|title }}'s {% endif %} Posts</h2>
+{% include 'inc/posts.html' %}
+
+{% endblock %}

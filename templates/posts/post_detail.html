@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load is_liked %}
+{% load like_count %}
+{% load reply_count %}
+
+{% block body %}
+
+<div class="card mx-auto m-2 col-lg-9 d-flex justify-content-center">
+  <div class="card text-light p-3"
+    style="background: linear-gradient(180deg, rgba(61,12,115,1) 0%, rgba(52,8,71,1) 100%)">
+    <div class="card-body">
+      {% if post.root %}
+      <h6>Replied to <a href="{{ post.root.get_absolute_url }}">{{ post.user }}</a></h6>
+      {% endif %}
+      <h5 class="card-title"><a href="{% url 'accounts:profile' post.user.pk %}">{{ post.user }}</a>
+        {% if post.post_type == 'REP' %}
+        | Reposted from <a href="{{ post.reposted_from.get_absolute_url }}">
+          {{ post.reposted_from.user }}</a>
+        {% endif %}
+      </h5>
+      <h6 class="card-subtitle mb-2 text-light">{{ post.updated|timesince }} ago | {{post.views_count}} <svg
+          xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye"
+          viewBox="0 0 16 16">
+          <path
+            d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z" />
+          <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z" />
+        </svg></h6>
+      {% if post.post_type != 'TXT' %}
+      {% if post.post_type == 'IMG' %}
+      <img class="card-img-top" src="{{ post.image.url }}" alt="Card image cap">
+      {% elif post.post_type == 'VID' %}
+      <video class="card-img-top" controls>
+        <source src="{{ post.video.url }}" type="video/mp4">
+      </video>
+      {% endif %}
+      {% endif %}
+      {% if post.post_type == 'REP' %}
+
+      {% if post.reposted_from.post_type != 'TXT' %}
+      {% if post.reposted_from.post_type == 'IMG' %}
+      <img class="card-img-top" src="{{ post.reposted_from.image.url }}" alt="Card image cap">
+      {% elif post.reposted_from.post_type == 'VID' %}
+      <video class="card-img-top" controls>
+        <source src="{{ post.video.url }}" type="video/mp4">
+      </video>
+      {% endif %}
+
+      <p class="card-text my-3">{{ post.reposted_from.body }}</p>
+      {% endif %}
+
+      {% else %}
+      <p class="card-text my-3">{{ post.body }}</p>
+      {% endif %}
+      <hr>
+      <p>{% for tag in post.tags.all %} <a href="{{ tag.get_absolute_url }}">#{{ tag }}</a> {% endfor %} </p>
+      <div class="row d-flex justify-content-center">
+        {% if not post|is_liked:user %}
+        <a class="btn btn-secondary col-lg-1 m-1"
+          href="{% url 'posts:like' post.pk %}?next={{ request.get_full_path }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart"
+            viewBox="0 0 16 16">
+            <path
+              d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+          </svg> {{ post|like_count }}
+        </a>
+        {% else %}
+        <a class="btn btn-danger col-lg-1 m-1" href="{% url 'posts:like' post.pk %}?next={{ request.get_full_path }}">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-fill"
+            viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+          </svg> {{ post|like_count }}
+        </a>
+        {% endif %}
+        <a class="btn btn-secondary col-lg-2 m-1" href="{% url 'posts:reply' post.pk %}">
+          Reply {{ post|reply_count }}</a>
+        {% if user == post.user %}
+        <a class="btn btn-danger col-lg-1 m-1" href="{% url 'posts:delete_post' post.pk %}">Delete</a>
+        {% else %}
+        <a class="btn btn-secondary col-lg-1 m-1" href="{% url 'posts:repost' post.pk %}">Repost</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<br><br>
+<h3 class="text-center">Replies</h3>
+<hr>
+{% include 'inc/posts.html' %}
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block body %}
+
+<div class="card mx-auto m-2 col-lg-9 d-flex justify-content-center">
+  <div class="card text-light p-3"
+    style="background: linear-gradient(180deg, rgba(61,12,115,1) 0%, rgba(52,8,71,1) 100%)">
+    <div class="card-body">
+      <h5 class="card-title">{% if notif.title %}{{ notif.title }}{% endif %} {% if not notif.is_read %}
+        <b>(NEW!)</b>{% endif %}
+      </h5>
+      <h6 class="card-subtitle mb-2 text-light">{{ notif.created|timesince }} ago</h6>
+      <p class="card-text my-3">{{ notif.message|safe }}</p>
+      <a href="{% url 'notifs:delete_notif' notif.pk %}" class="btn btn-danger">Delete</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
