@@ -45,8 +45,4 @@ urlpatterns = [
     path("followers/<int:pk>/", views.FollowersView.as_view(), name="followers"),
     path("following/<int:pk>/", views.FollowingView.as_view(), name="following"),
     path("mute/<int:pk>/", views.MuteView.as_view(), name="mute"),
-    # api
-    path("get-token/", views.CustomObtainAuthToken.as_view()),
-    path("api-register/", views.UserRegisterAPIView.as_view()),
-    path("api-login/", views.UserLoginAPIView.as_view()),
 ]

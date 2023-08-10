@@ -17,17 +17,6 @@ from django.urls import reverse
 from . import tasks
 from django.core.paginator import Paginator
 from utils import notify, add_view
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.authtoken.models import Token
-from rest_framework.response import Response
-from .serializers import (
-    CustomAuthTokenSerializer,
-    UserRegisterSerializer,
-    UserLoginSerializer,
-    UserSerializer,
-)
-from rest_framework.views import APIView
-from rest_framework import status
 
 
 class UserRegisterView(View):
@@ -332,42 +321,42 @@ class MuteView(View):
         return redirect("accounts:profile", pk=following.followed.pk)
 
 
-class CustomObtainAuthToken(ObtainAuthToken):
-    serializer_class = CustomAuthTokenSerializer
+# class CustomObtainAuthToken(ObtainAuthToken):
+#     serializer_class = CustomAuthTokenSerializer
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.serializer_class(
-            data=request.data, context={"request": request}
-        )
-        serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data["user"]
-        token, created = Token.objects.get_or_create(user=user)
-        return Response({"token": token.key})
-
-
-class UserRegisterAPIView(APIView):
-    def post(self, request):
-        serializer = UserRegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = User.objects.create_user(
-                email=serializer.validated_data["email"],
-                password=serializer.validated_data["password"],
-            )
-            token = Token.objects.create(user=user)
-            return Response({"token": token.key})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request, *args, **kwargs):
+#         serializer = self.serializer_class(
+#             data=request.data, context={"request": request}
+#         )
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data["user"]
+#         token, created = Token.objects.get_or_create(user=user)
+#         return Response({"token": token.key})
 
 
-class UserLoginAPIView(APIView):
-    def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            username = serializer.data.get("username", None)
-            password = serializer.data.get("password", None)
-            user = authenticate(request, email=username, password=password)
-            if username and password:
-                token, created = Token.objects.get_or_create(user=user)
-                return Response(
-                    {"token": token.key, "user": UserSerializer(instance=user).data}
-                )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class UserRegisterAPIView(APIView):
+#     def post(self, request):
+#         serializer = UserRegisterSerializer(data=request.data)
+#         if serializer.is_valid():
+#             user = User.objects.create_user(
+#                 email=serializer.validated_data["email"],
+#                 password=serializer.validated_data["password"],
+#             )
+#             token = Token.objects.create(user=user)
+#             return Response({"token": token.key})
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# class UserLoginAPIView(APIView):
+#     def post(self, request):
+#         serializer = UserLoginSerializer(data=request.data)
+#         if serializer.is_valid():
+#             username = serializer.data.get("username", None)
+#             password = serializer.data.get("password", None)
+#             user = authenticate(request, email=username, password=password)
+#             if username and password:
+#                 token, created = Token.objects.get_or_create(user=user)
+#                 return Response(
+#                     {"token": token.key, "user": UserSerializer(instance=user).data}
+#                 )
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
