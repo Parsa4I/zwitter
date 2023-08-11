@@ -40,6 +40,9 @@ class User(AbstractBaseUser):
     def is_followed(self, by):
         return Following.objects.filter(follower=by, followed=self).exists()
 
+    def __str__(self):
+        return self.email
+
 
 class OTPCode(models.Model):
     code = models.PositiveSmallIntegerField(
