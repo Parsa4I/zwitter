@@ -14,6 +14,7 @@ This is a Django website, made for learning/practice purposes. It is aimed to fu
 - Notification system
 - Connecting to a cloud storage for uploading media files
 - Async tasks using Celery and RabbitMQ
+- (Adding DRF API)
 
 ## Setup and Usage
 
