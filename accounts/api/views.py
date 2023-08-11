@@ -40,6 +40,7 @@ class VerifyAPIView(APIView):
             if serializer.validated_data["otp_code"] == otp_code_obj.code:
                 user = User.objects.create_user(email=email, password=password)
                 otp_code_obj.delete()
+                del request.session["user_signup_info"]
                 return Response(UserSerializer(user).data)
             return Response({"error": "Code does not match."})
         return Response(serializer.errors)
