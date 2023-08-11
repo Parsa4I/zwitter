@@ -18,6 +18,7 @@ This is a Django website, made for learning/practice purposes. It is aimed to fu
 ## Setup and Usage
 
     # install requirements
+    $ python -m venv venv
     $ pip install -r requirements.txt
 Then, setup a RabbitMQ server running.
 Create a `.env` file and write the following environment variables and place your own values:
