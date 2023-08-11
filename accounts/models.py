@@ -41,6 +41,8 @@ class User(AbstractBaseUser):
         return Following.objects.filter(follower=by, followed=self).exists()
 
     def __str__(self):
+        if self.username:
+            return self.username
         return self.email
 
 

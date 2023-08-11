@@ -12,8 +12,6 @@ from django.db.models import Q
 from utils import notify, notify_followers, add_view
 from django.http import HttpResponseForbidden
 from .serializers import PostSerializer
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.generics import ListAPIView
 
 
