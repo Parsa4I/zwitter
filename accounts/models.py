@@ -3,8 +3,6 @@ from django.contrib.auth.models import AbstractBaseUser
 from .managers import UserManager
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
-from django.core.exceptions import ValidationError
-from django.db.models import Q
 
 
 class User(AbstractBaseUser):
@@ -65,10 +63,3 @@ class Following(models.Model):
 
     def __str__(self):
         return f"{self.follower} followed {self.followed}"
-
-    # def save(self, *args, **kwargs):
-    #     if Following.objects.filter(
-    #         follower=self.follower, followed=self.followed, accepted=True
-    #     ).exists():
-    #         raise ValidationError("This following already exists.")
-    #     return super().save(*args, **kwargs)
