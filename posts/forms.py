@@ -32,7 +32,7 @@ class PostAdminForm(forms.ModelForm):
             "post_type",
             "image",
             "video",
-            'tags',
+            "tags",
             "root",
             "reposted_from",
         )
@@ -44,10 +44,5 @@ class PostAdminForm(forms.ModelForm):
         raise ValidationError("A post can't have 2 media files at the same time.")
 
 
-# class ReplyForm(forms.Form):
-#     body = forms.CharField(max_length=4000, widget=forms.Textarea, required=True)
-#     tags = forms.CharField(
-#         max_length=255,
-#         required=False,
-#         widget=forms.TextInput(attrs={"placeholder": "separate with commas"}),
-#     )
+class SearchForm(forms.Form):
+    q = forms.CharField(max_length=4000, required=False, label="")

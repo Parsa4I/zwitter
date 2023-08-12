@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from .forms import CreatePostForm, AttachPictureForm, AttachVideoForm
+from .forms import CreatePostForm, AttachPictureForm, AttachVideoForm, SearchForm
 from .models import Post, Tag, Like
 from accounts.models import Following
 from django.contrib import messages
@@ -11,12 +11,12 @@ from itertools import chain
 from django.db.models import Q
 from utils import notify, notify_followers, add_view
 from django.http import HttpResponseForbidden
-from .serializers import PostSerializer
-from rest_framework.generics import ListAPIView
 
 
 class PostsListView(View):
     def get(self, request):
+        q = request.GET.get("q", None)
+
         if request.user.is_authenticated:
             users_followings = Following.objects.filter(follower=request.user)
             following_users = []
@@ -25,10 +25,19 @@ class PostsListView(View):
 
             following_users_posts = Post.objects.filter(user__in=following_users)
             normal_posts = Post.objects.filter(~Q(user__in=following_users))
+            if q:
+                following_users_posts = following_users_posts.filter(
+                    Q(body__icontains=q) | Q(tags__title__icontains=q)
+                )
+                normal_posts = normal_posts.filter(
+                    Q(body__icontains=q) | Q(tags__title__icontains=q)
+                )
 
             posts = list(chain(following_users_posts, normal_posts))
         else:
             posts = Post.objects.all().order_by("-updated")
+            if q:
+                posts = posts.filter(Q(body__icontains=q) | Q(tags__title__icontains=q))
 
         paginator = Paginator(object_list=posts, per_page=10, orphans=5)
         page_number = request.GET.get("page", 1)
@@ -38,10 +47,11 @@ class PostsListView(View):
             add_view(request, post)
 
         paginator_range = posts.paginator.get_elided_page_range(page_number)
+
         return render(
             request,
             "posts/posts_list.html",
-            {"posts": posts, "paginator_range": paginator_range},
+            {"posts": posts, "paginator_range": paginator_range, "form": SearchForm()},
         )
 
 
@@ -367,27 +377,3 @@ class DeletePostView(LoginRequiredMixin, View):
         post.delete()
         messages.success(request, "Post deleted", "success")
         return redirect("accounts:profile", pk=request.user.pk)
-
-
-class PostsListAPIView(ListAPIView):
-    model = Post
-    serializer_class = PostSerializer
-
-    def get_queryset(self):
-        if self.request.user.is_authenticated:
-            users_followings = Following.objects.filter(follower=self.request.user)
-            following_users = []
-            for following in users_followings:
-                following_users.append(following.followed.pk)
-
-            following_users_posts = Post.objects.filter(user__in=following_users)
-            normal_posts = Post.objects.filter(~Q(user__in=following_users))
-
-            posts = list(chain(following_users_posts, normal_posts))
-        else:
-            posts = Post.objects.all().order_by("-updated")
-
-        for post in posts:
-            add_view(self.request, post)
-
-        return posts

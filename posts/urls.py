@@ -22,6 +22,4 @@ urlpatterns = [
     path("reply/<int:pk>/", views.ReplyView.as_view(), name="reply"),
     path("repost/<int:pk>/", views.RepostView.as_view(), name="repost"),
     path("delete-post/<int:pk>/", views.DeletePostView.as_view(), name="delete_post"),
-    # api
-    path("api-list/", views.PostsListAPIView.as_view()),
 ]

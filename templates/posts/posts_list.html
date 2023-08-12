@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 
 {% block body %}
+
+<form>
+  <input class="form-control" type="search" placeholder="Search" name="q">
+</form>
+
+<hr>
+
 <h1>Posts</h1>
 {% if tag %}
 <a href="{{ tag.get_absolute_url }}">#{{ tag }} </a><span> ({{ tag_count }} Posts)</span>
