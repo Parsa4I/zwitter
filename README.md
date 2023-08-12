@@ -8,10 +8,10 @@ This is a Django website, made for learning/practice purposes. It is aimed to fu
 - Hashtags
 - Trend tags
 - Liking posts
-- Reply (threads)
+- Reply
 - Follow
 - Profile
-- Notification system
+- Notification
 - Connecting to a cloud storage for uploading media files
 - Async tasks using Celery and RabbitMQ
 - (Adding DRF API)

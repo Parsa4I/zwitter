@@ -44,3 +44,12 @@ class VerifyAPIView(APIView):
                 return Response(UserSerializer(user).data)
             return Response({"error": "Code does not match."})
         return Response(serializer.errors)
+
+
+class ProfileAPIView(APIView):
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        is_followed = user.is_followed(request.user)
+        serializer = UserSerializer(instance=user)
+        serializer.data["is_followed"] = is_followed
+        return Response(serializer.data)
