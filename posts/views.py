@@ -125,6 +125,7 @@ class AttachPictureView(LoginRequiredMixin, View):
                     root = root.root
                 post.root = root
                 del request.session["replied_post_pk"]
+                request.session.modified = True
 
             for tag_pk in request.session["post_tags"]:
                 post.tags.add(Tag.objects.get(pk=tag_pk))
@@ -134,6 +135,8 @@ class AttachPictureView(LoginRequiredMixin, View):
             post.save()
             del request.session["post_tags"]
             del request.session["post_body"]
+            request.session.modified = True
+
             if root_pk:
                 notify(
                     root.user,
@@ -156,8 +159,9 @@ class AttachVideoView(LoginRequiredMixin, View):
     template_name = "posts/attach_video.html"
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.session.get("post_body"):
+        if not request.session.get("post_body", None):
             return redirect("posts:create_post")
+        print(request.session.get("post_body", None))
         return super().dispatch(request, *args, **kwargs)
 
     def get(self, request):
@@ -182,6 +186,7 @@ class AttachVideoView(LoginRequiredMixin, View):
                     root = root.root
                 post.root = root
                 del request.session["replied_post_pk"]
+                request.session.modified = True
 
             for tag_pk in request.session["post_tags"]:
                 post.tags.add(Tag.objects.get(pk=tag_pk))
@@ -191,6 +196,7 @@ class AttachVideoView(LoginRequiredMixin, View):
             post.save()
             del request.session["post_tags"]
             del request.session["post_body"]
+            request.session.modified = True
             if root_pk:
                 notify(
                     root.user,
@@ -307,6 +313,7 @@ class ReplyView(LoginRequiredMixin, View):
                 post.save()
 
                 del request.session["replied_post_pk"]
+                request.session.modified = True
 
                 if request.user != root.user:
                     notify(
