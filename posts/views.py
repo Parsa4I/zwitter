@@ -18,13 +18,16 @@ class PostsListView(View):
         q = request.GET.get("q", None)
 
         if request.user.is_authenticated:
-            users_followings = Following.objects.filter(follower=request.user)
+            users_followings = Following.objects.select_related("followed").filter(
+                follower=request.user, accepted=True
+            )
             following_users = []
             for following in users_followings:
                 following_users.append(following.followed.pk)
 
             following_users_posts = Post.objects.filter(user__in=following_users)
             normal_posts = Post.objects.filter(~Q(user__in=following_users))
+
             if q:
                 following_users_posts = following_users_posts.filter(
                     Q(body__icontains=q) | Q(tags__title__icontains=q)
@@ -145,6 +148,7 @@ class AttachPictureView(LoginRequiredMixin, View):
                 )
                 messages.success(request, "Replied successfully", "success")
                 return redirect("posts:post_post_detail", pk=root_pk)
+
             notify_followers(request.user, post)
             messages.success(request, "Posted successfully", "success")
             return redirect("posts:posts")
@@ -205,6 +209,7 @@ class AttachVideoView(LoginRequiredMixin, View):
                 )
                 messages.success(request, "Replied successfully", "success")
                 return redirect("posts:post_post_detail", pk=root_pk)
+
             notify_followers(request.user, post)
             messages.success(request, "Posted successfully", "success")
             return redirect("posts:posts")
@@ -216,7 +221,9 @@ class AttachVideoView(LoginRequiredMixin, View):
 
 class PostDetailView(View):
     def get(self, request, pk):
-        post = get_object_or_404(Post, pk=pk)
+        post = get_object_or_404(
+            Post.objects.prefetch_related("replies", "tags"), pk=pk
+        )
         replies = post.replies.all()
         paginator = Paginator(object_list=replies, per_page=10, orphans=5)
         page_number = request.GET.get("page", 1)

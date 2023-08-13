@@ -10,8 +10,8 @@
 <form action="" method="post">
   {% csrf_token %}
   {{ form|crispy }}
+  <button name="post-body" class="btn btn-primary" type="submit">Post</button>
   <button name="attach-pic" class="btn btn-info" type="submit">Attach Picture</button>
   <button name="attach-vid" class="btn btn-info" type="submit">Attach Video</button>
-  <button name="post-body" class="btn btn-primary" type="submit">Post</button>
 </form>
 {% endblock %}

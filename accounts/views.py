@@ -135,7 +135,7 @@ class ProfileView(View):
 
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
-        posts = Post.objects.filter(user=user)
+        posts = Post.objects.filter(user=user).prefetch_related("tags")
         paginator = Paginator(object_list=posts, per_page=10, orphans=5)
         page_number = request.GET.get("page", 1)
         posts = paginator.get_page(page_number)
