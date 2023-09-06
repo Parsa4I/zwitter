@@ -1,6 +1,4 @@
 from celery import shared_task
-from .models import Post, Tag
-from accounts.models import User
 from bucket import bucket
 
 

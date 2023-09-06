@@ -1,7 +1,6 @@
 from django.dispatch import receiver
 from django.db.models.signals import pre_delete
 from .models import Post
-from bucket import bucket
 from . import tasks
 
 
