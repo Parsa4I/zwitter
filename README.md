@@ -22,6 +22,10 @@ This is a Django website, made for learning/practice purposes. It is aimed to fu
     $ python -m venv venv
     $ pip install -r requirements.txt
 Then, setup a RabbitMQ server running.
+If you later had any connection issues between Celery and RabbitMQ,
+change value of `CELERY_BROKER_URL` in `settings.py` to
+`"amqp://<username>:<password>@localhost:5672/"`.
+
 Create a `.env` file and write the following environment variables and place your own values:
 
     SECRET_KEY=django-insecure-0eg4+&h#an4l68q6do0%b_!k@0n=-^n0p+-$!it3bn&hm8ytz2

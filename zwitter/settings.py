@@ -19,7 +19,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -73,7 +72,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "zwitter.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -103,7 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -114,7 +111,6 @@ TIME_ZONE = "Asia/Tehran"
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
@@ -127,9 +123,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
 AUTH_USER_MODEL = "accounts.User"
-
 
 # Email
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -140,24 +134,19 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 
-
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
-
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "accounts.authentication.UsernameAuthBackend",
 ]
 
-
 LOGIN_URL = "accounts:login"
 LOGIN_REDIRECT_URL = "pages:home"
 
-
 MEDIA_ROOT = BASE_DIR / "media/"
 MEDIA_URL = "/media/"
-
 
 # Celery Configuration Options
 from datetime import timedelta
@@ -170,10 +159,9 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_ALWAYS_EAGER = False
 CELERY_TASK_TIME_LIMIT = 60 * 60
 CELERY_RESULT_BACKEND = "rpc://"
-CELERY_BROKER_URL = "amqp://rabbitmq"
+CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672/"
 CELERY_RESULT_EXPIRES = timedelta(days=1)
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
-
 
 # Arvan Cloud Configs
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
@@ -183,7 +171,6 @@ AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_FILE_OVERWRITE = False
 AWS_S3_ENDPOINT_URL = env("AWS_S3_ENDPOINT_URL")
 
-
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
@@ -191,7 +178,6 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
-
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
