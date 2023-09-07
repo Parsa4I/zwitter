@@ -11,6 +11,7 @@ from itertools import chain
 from django.db.models import Q
 from utils import notify, notify_followers, add_view
 from django.http import HttpResponseForbidden
+from django.core.cache import cache
 
 
 class PostsListView(View):
@@ -25,8 +26,21 @@ class PostsListView(View):
             for following in users_followings:
                 following_users.append(following.followed.pk)
 
-            following_users_posts = Post.objects.filter(user__in=following_users)
-            normal_posts = Post.objects.filter(~Q(user__in=following_users))
+            following_users_posts = cache.get(
+                f"{request.user.pk}_following_users_posts"
+            )
+            if not following_users_posts:
+                following_users_posts = Post.objects.filter(user__in=following_users)
+                cache.set(
+                    f"{request.user.pk}_following_users_posts",
+                    following_users_posts,
+                    60,
+                )
+
+            normal_posts = cache.get("normal_posts")
+            if not normal_posts:
+                normal_posts = Post.objects.filter(~Q(user__in=following_users))
+                cache.set("normal_posts", normal_posts, 60)
 
             if q:
                 following_users_posts = following_users_posts.filter(
@@ -271,7 +285,7 @@ class LikePostView(LoginRequiredMixin, View):
         post = get_object_or_404(Post, pk=pk)
         try:
             Like.objects.get(user=request.user, post=post).delete()
-        except:
+        except Like.DoesNotExist:
             Like.objects.create(user=request.user, post=post)
             if request.user != post.user:
                 notify(
@@ -348,7 +362,7 @@ class RepostView(LoginRequiredMixin, View):
         self.source_post = get_object_or_404(Post, pk=pk)
         return super().setup(request, *args, **kwargs)
 
-    def get(self, request, pk):
+    def get(self, request, *args, **kwargs):
         return render(request, "posts/repost.html", {"post": self.source_post})
 
     def post(self, request, pk):
@@ -378,7 +392,7 @@ class DeletePostView(LoginRequiredMixin, View):
         post = get_object_or_404(Post, pk=pk)
         if request.user != post.user:
             return HttpResponseForbidden(
-                "You are not allowed to delete othe users' posts"
+                "You are not allowed to delete other users' posts"
             )
         return render(request, "posts/delete_post.html", {"post": post})
 
@@ -386,7 +400,7 @@ class DeletePostView(LoginRequiredMixin, View):
         post = get_object_or_404(Post, pk=pk)
         if request.user != post.user:
             return HttpResponseForbidden(
-                "You are not allowed to delete othe users' posts"
+                "You are not allowed to delete other users' posts"
             )
         post.delete()
         messages.success(request, "Post deleted", "success")

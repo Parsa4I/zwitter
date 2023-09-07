@@ -13,6 +13,7 @@ This is a Django website, made for learning/practice purposes. It is aimed to fu
 - Profile
 - Notification
 - Search
+- Cache (Using Redis)
 - Connecting to a cloud storage for uploading media files
 - Async tasks using Celery and RabbitMQ
 
@@ -21,10 +22,15 @@ This is a Django website, made for learning/practice purposes. It is aimed to fu
     # install requirements
     $ python -m venv venv
     $ pip install -r requirements.txt
-Then, setup a RabbitMQ server running.
+Then, set up a RabbitMQ and a Redis server running on your localhost.
 If you later had any connection issues between Celery and RabbitMQ,
 change value of `CELERY_BROKER_URL` in `settings.py` to
 `"amqp://<username>:<password>@localhost:5672/"`.
+You can also change `CACHES` values,
+in `settings.py`, if you have a username and
+password set for your Redis server.
+Just change `CAHCES["default"]["LOCATION"]`
+to `"redis:///<username>:<password>@127.0.0.1:6379"`.
 
 Create a `.env` file and write the following environment variables and place your own values:
 
