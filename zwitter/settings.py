@@ -82,10 +82,13 @@ DATABASES = {
     }
 }
 
+REDIS_HOST = os.environ.get("REDIS_HOST", "127.0.0.1")
+REDIS_PORT = os.environ.get("REDIS_PORT", "6379")
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+        "LOCATION": f"redis://{REDIS_HOST}:{REDIS_PORT}",
     }
 }
 
@@ -157,6 +160,9 @@ MEDIA_URL = "/media/"
 # Celery Configuration Options
 from datetime import timedelta
 
+RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "127.0.0.1")
+RABBITMQ_PORT = os.environ.get("RABBITMQ_PORT", "5672")
+
 CELERY_TIMEZONE = "Asia/Tehran"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_RESULT_ACCEPT_CONTENT = ["json"]
@@ -165,7 +171,7 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_ALWAYS_EAGER = False
 CELERY_TASK_TIME_LIMIT = 60 * 60
 CELERY_RESULT_BACKEND = "rpc://"
-CELERY_BROKER_URL = "amqp://guest:guest@localhost:5672/"
+CELERY_BROKER_URL = f"amqp://guest:guest@{RABBITMQ_HOST}:{RABBITMQ_PORT}/"
 CELERY_RESULT_EXPIRES = timedelta(days=1)
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
