@@ -5,7 +5,7 @@
 {% for post in posts %}
 <div class="card mx-auto m-2 col-lg-6 d-flex justify-content-center">
   <div class="card text-light p-2"
-       style="background: linear-gradient(180deg, rgba(61,12,115,1) 0%, rgba(52,8,71,1) 100%)">
+    style="background: linear-gradient(180deg, rgba(61,12,115,1) 0%, rgba(52,8,71,1) 100%)">
     <div class="card-body">
       {% if post.root %}
       <h6>Replied to <a href="{{ post.root.get_absolute_url }}">{{ post.root.user }}</a></h6>
@@ -32,8 +32,8 @@
         <source src="{{ post.video.url }}" type="video/mp4">
       </video>
       {% endif %}
-
       {% endif %}
+
       {% if post.post_type == 'REP' %}
 
       {% if post.reposted_from.post_type != 'TXT' %}
@@ -44,7 +44,7 @@
         <source src="{{ post.video.url }}" type="video/mp4">
       </video>
       {% endif %}
-
+      {% else %}
       <p class="card-text my-3">{{ post.reposted_from.body }}</p>
       {% endif %}
 
@@ -77,7 +77,7 @@
 
         <a href="{{ post.get_absolute_url }}" class="btn btn-primary detail-button col-5 m-1">details</a>
         {% if user == post.user %}
-        <a class="btn btn-danger col-2 m-1" href="{% url 'posts:repost' post.pk %}">Delete</a>
+        <a class="btn btn-danger col-2 m-1" href="{% url 'posts:delete_post' post.pk %}">Delete</a>
         {% else %}
         <a class="btn btn-secondary col-2 m-1" href="{% url 'posts:repost' post.pk %}">Repost</a>
         {% endif %}

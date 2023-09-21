@@ -5,7 +5,7 @@ from django.views.decorators.cache import cache_page
 
 app_name = "posts"
 urlpatterns = [
-    path("", views.PostsListView.as_view(), name="posts"),
+    path("", cache_page(60)(views.PostsListView.as_view()), name="posts"),
     path("create-post/", views.CreatePostView.as_view(), name="create_post"),
     path(
         "create-post/attach-picture/",

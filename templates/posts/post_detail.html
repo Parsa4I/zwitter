@@ -44,7 +44,7 @@
         <source src="{{ post.video.url }}" type="video/mp4">
       </video>
       {% endif %}
-
+      {% else %}
       <p class="card-text my-3">{{ post.reposted_from.body }}</p>
       {% endif %}
 
