@@ -82,8 +82,8 @@ DATABASES = {
     }
 }
 
-REDIS_HOST = os.environ.get("REDIS_HOST", "127.0.0.1")
-REDIS_PORT = os.environ.get("REDIS_PORT", "6379")
+REDIS_HOST = env("REDIS_HOST", default="127.0.0.1")
+REDIS_PORT = env("REDIS_PORT", default="6379")
 
 CACHES = {
     "default": {
@@ -160,8 +160,8 @@ MEDIA_URL = "/media/"
 # Celery Configuration Options
 from datetime import timedelta
 
-RABBITMQ_HOST = os.environ.get("RABBITMQ_HOST", "127.0.0.1")
-RABBITMQ_PORT = os.environ.get("RABBITMQ_PORT", "5672")
+RABBITMQ_HOST = env("RABBITMQ_HOST", default="127.0.0.1")
+RABBITMQ_PORT = env("RABBITMQ_PORT", default="5672")
 
 CELERY_TIMEZONE = "Asia/Tehran"
 CELERY_ACCEPT_CONTENT = ["json"]

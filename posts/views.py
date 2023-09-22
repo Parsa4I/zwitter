@@ -82,6 +82,7 @@ class CreatePostView(LoginRequiredMixin, View):
     def post(self, request):
         form = self.form_class(request.POST)
         if form.is_valid():
+            cache.clear()
             body = form.cleaned_data["body"]
             tag_titles = form.cleaned_data["tags"]
             tags = get_tags_list(tag_titles)
