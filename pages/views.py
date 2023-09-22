@@ -3,6 +3,9 @@ from django.views import View
 from django.contrib import messages
 from posts.models import Post, Tag
 from django.db.models import Count
+import environ
+from pathlib import Path
+import os
 
 
 class HomeView(View):
