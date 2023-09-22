@@ -3,14 +3,14 @@ from django.contrib.auth.models import AbstractBaseUser
 from .managers import UserManager
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
+from django.contrib.auth.models import PermissionsMixin
 
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, blank=True, null=True, unique=True)
     email = models.EmailField(unique=True)
     phone_number = models.CharField(max_length=11, blank=True, null=True, unique=True)
     is_active = models.BooleanField(default=True)
-    is_superuser = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -18,12 +18,6 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = "email"
     EMAIL_FIELD = "email"
     REQUIRED_FIELDS = []
-
-    def has_perm(self, perm, obj=None):
-        return True
-
-    def has_module_perms(self, app_label):
-        return True
 
     @property
     def is_staff(self):

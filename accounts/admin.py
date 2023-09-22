@@ -21,9 +21,18 @@ class UserAdmin(BaseUserAdmin):
                     "password",
                     "username",
                     "phone_number",
+                )
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
                     "is_active",
                     "is_superuser",
                     "is_admin",
+                    "user_permissions",
+                    "groups",
                 )
             },
         ),
@@ -34,7 +43,13 @@ class UserAdmin(BaseUserAdmin):
 
     search_fields = ("email",)
     ordering = ("-last_login",)
-    filter_horizontal = ()
+    filter_horizontal = ("groups", "user_permissions")
+
+    def get_form(self, request, *args, **kwargs):
+        form = super().get_form(request, *args, **kwargs)
+        if not request.user.is_superuser:
+            form.base_fields["is_superuser"].disabled = True
+        return form
 
 
 class FollowingAdmin(admin.ModelAdmin):
