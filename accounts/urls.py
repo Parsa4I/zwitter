@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from django.views.decorators.cache import cache_page
 
 
 app_name = "accounts"
@@ -29,7 +28,7 @@ urlpatterns = [
     ),
     path(
         "profile/<int:pk>/",
-        cache_page(60 * 10)(views.ProfileView.as_view()),
+        views.ProfileView.as_view(),
         name="profile",
     ),
     path(
@@ -49,12 +48,12 @@ urlpatterns = [
     ),
     path(
         "followers/<int:pk>/",
-        cache_page(60)(views.FollowersView.as_view()),
+        views.FollowersView.as_view(),
         name="followers",
     ),
     path(
         "following/<int:pk>/",
-        cache_page(60)(views.FollowingView.as_view()),
+        views.FollowingView.as_view(),
         name="following",
     ),
     path("mute/<int:pk>/", views.MuteView.as_view(), name="mute"),

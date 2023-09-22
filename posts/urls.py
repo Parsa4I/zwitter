@@ -1,11 +1,10 @@
 from django.urls import path
 from . import views
-from django.views.decorators.cache import cache_page
 
 
 app_name = "posts"
 urlpatterns = [
-    path("", cache_page(60)(views.PostsListView.as_view()), name="posts"),
+    path("", views.PostsListView.as_view(), name="posts"),
     path("create-post/", views.CreatePostView.as_view(), name="create_post"),
     path(
         "create-post/attach-picture/",
@@ -19,10 +18,10 @@ urlpatterns = [
     ),
     path(
         "post-detail/<int:pk>/",
-        cache_page(60)(views.PostDetailView.as_view()),
+        views.PostDetailView.as_view(),
         name="post_detail",
     ),
-    path("tag/<str:title>/", cache_page(60)(views.TagPostView.as_view()), name="tag"),
+    path("tag/<str:title>/", views.TagPostView.as_view(), name="tag"),
     path("like/<int:pk>/", views.LikePostView.as_view(), name="like"),
     path("reply/<int:pk>/", views.ReplyView.as_view(), name="reply"),
     path("repost/<int:pk>/", views.RepostView.as_view(), name="repost"),
