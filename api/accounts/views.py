@@ -7,6 +7,14 @@ from rest_framework import status
 from django.core.cache import cache
 from accounts.models import OTPCode
 from rest_framework.serializers import ValidationError
+from rest_framework.permissions import IsAuthenticated
+
+
+class Hello(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        return Response("hello")
 
 
 class UserRegisterAPIView(APIView):
