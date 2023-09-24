@@ -62,3 +62,10 @@ class Following(models.Model):
 
     def __str__(self):
         return f"{self.follower} followed {self.followed}"
+
+    def save(self, *args, **kwargs):
+        if Following.objects.filter(
+            follower=self.follower, followed=self.followed
+        ).exists():
+            raise ValueError("This following already exists.")
+        return super().save(*args, **kwargs)
