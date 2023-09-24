@@ -1,5 +1,7 @@
 from rest_framework import serializers
 from .validators import validate_unique_email
+from accounts.models import User, Following
+from api.posts.serializers import PostInlineSerializer
 
 
 class UserRegisterSerializer(serializers.Serializer):
@@ -18,3 +20,50 @@ class UserRegisterSerializer(serializers.Serializer):
 class OTPCodeSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=255)
     otp_code = serializers.IntegerField(min_value=1000, max_value=9999)
+
+
+class UserSerializer(serializers.ModelSerializer):
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    posts = PostInlineSerializer(many=True)
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "followers_count", "following_count", "posts")
+
+    def get_followers_count(self, obj):
+        return Following.objects.filter(followed=obj, accepted=True).count()
+
+    def get_following_count(self, obj):
+        return Following.objects.filter(follower=obj, accepted=True).count()
+
+
+class UserSerializerInline(serializers.ModelSerializer):
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+    url = serializers.HyperlinkedIdentityField("api_accounts:user")
+
+    class Meta:
+        model = User
+        fields = ("username", "email", "followers_count", "following_count", "url")
+
+    def get_followers_count(self, obj):
+        return Following.objects.filter(followed=obj, accepted=True).count()
+
+    def get_following_count(self, obj):
+        return Following.objects.filter(follower=obj, accepted=True).count()
+
+
+class FollowRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Following
+        fields = ("follower",)
+
+
+class FollowingSerializer(serializers.ModelSerializer):
+    follower = UserSerializerInline()
+    followed = UserSerializerInline()
+
+    class Meta:
+        model = Following
+        fields = ("follower", "followed", "mute")

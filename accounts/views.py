@@ -300,7 +300,7 @@ class FollowersView(View):
 class FollowingView(View):
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
-        followers = Following.objects.filter(follower=user)
+        followers = Following.objects.filter(follower=user, accepted=True)
         return render(
             request,
             "accounts/follows.html",
