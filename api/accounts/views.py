@@ -174,3 +174,32 @@ class FollowersAPIView(APIView):
             following, many=True, context={"request": request}
         )
         return Response(serializer.data, status.HTTP_200_OK)
+
+
+class AcceptFollowRequestAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request, pk):
+        follower = get_object_or_404(User, pk=pk)
+        follow_request = get_object_or_404(
+            Following, follower=follower, followed=request.user
+        )
+        if not follow_request.accepted:
+            follow_request.accepted = True
+            follow_request.save()
+            return Response({"message": "Follow request accepted."}, status.HTTP_200_OK)
+        return Response(
+            {"message": "Follow request had been accepted before."}, status.HTTP_200_OK
+        )
+
+
+class DeclineFollowRequestAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request, pk):
+        follower = get_object_or_404(User, pk=pk)
+        follow_request = get_object_or_404(
+            Following, follower=follower, followed=request.user, accepted=False
+        )
+        follow_request.delete()
+        return Response({"message": "Follow request declined."}, status.HTTP_200_OK)

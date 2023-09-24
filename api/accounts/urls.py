@@ -50,8 +50,16 @@ urlpatterns = [
     ),
     path("following/<int:pk>/", views.FollowingAPIView.as_view(), name="following"),
     path("followers/<int:pk>/", views.FollowersAPIView.as_view(), name="followers"),
-    # path('accept-follow/<int:pk>/', ),
-    # path('decline-follow/<int:pk>/',),
+    path(
+        "accept-follow/<int:pk>/",
+        views.AcceptFollowRequestAPIView.as_view(),
+        name="accept_follow_request",
+    ),
+    path(
+        "decline-follow/<int:pk>/",
+        views.DeclineFollowRequestAPIView.as_view(),
+        name="decline_follow_request",
+    ),
     # path('mute/<int:pk>/',),
     # path('is-followed',),
 ]
