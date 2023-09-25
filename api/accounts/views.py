@@ -1,4 +1,5 @@
 from rest_framework.views import APIView
+from rest_framework import generics
 from .serializers import (
     UserRegisterSerializer,
     OTPCodeSerializer,
@@ -145,35 +146,34 @@ class UnfollowAPIView(APIView):
                 )
 
 
-class FollowRequestsAPIView(APIView):
+class FollowRequestsAPIView(generics.GenericAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         follow_requests = Following.objects.filter(
             followed=request.user, accepted=False
         )
-        serializer = FollowRequestSerializer(follow_requests, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(follow_requests)
+        serializer = FollowRequestSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
-class FollowingAPIView(APIView):
+class FollowingAPIView(generics.GenericAPIView):
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
         following = Following.objects.filter(follower=user, accepted=True)
-        serializer = FollowingSerializer(
-            following, many=True, context={"request": request}
-        )
-        return Response(serializer.data, status.HTTP_200_OK)
+        page = self.paginate_queryset(following)
+        serializer = FollowingSerializer(page, many=True, context={"request": request})
+        return self.get_paginated_response(serializer.data)
 
 
-class FollowersAPIView(APIView):
+class FollowersAPIView(generics.GenericAPIView):
     def get(self, request, pk):
         user = get_object_or_404(User, pk=pk)
         following = Following.objects.filter(followed=user, accepted=True)
-        serializer = FollowingSerializer(
-            following, many=True, context={"request": request}
-        )
-        return Response(serializer.data, status.HTTP_200_OK)
+        page = self.paginate_queryset(following)
+        serializer = FollowingSerializer(page, many=True, context={"request": request})
+        return self.get_paginated_response(serializer.data)
 
 
 class AcceptFollowRequestAPIView(APIView):
