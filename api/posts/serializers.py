@@ -1,8 +1,9 @@
 from posts.models import Post, Like, Tag, PostView
 from rest_framework import serializers
+from api.accounts.serializers import UserInlineSerializer
 
 
-class TagInlineSerializer(serializers.ModelSerializer):
+class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ("pk", "title")
@@ -10,9 +11,13 @@ class TagInlineSerializer(serializers.ModelSerializer):
 
 class PostInlineSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
-    tags = TagInlineSerializer(many=True)
+    tags = TagSerializer(many=True)
     views_count = serializers.SerializerMethodField()
     url = serializers.HyperlinkedIdentityField("api_posts:post_detail")
+    reposted_from = serializers.HyperlinkedRelatedField(
+        "api_posts:post_detail", read_only=True
+    )
+    root = serializers.HyperlinkedRelatedField("api_posts:post_detail", read_only=True)
 
     class Meta:
         model = Post
@@ -37,3 +42,11 @@ class PostInlineSerializer(serializers.ModelSerializer):
 
     def get_views_count(self, obj):
         return PostView.objects.filter(post=obj).count()
+
+
+class PostSerializer(PostInlineSerializer):
+    user = UserInlineSerializer()
+
+    class Meta:
+        model = Post
+        fields = PostInlineSerializer.Meta.fields + ("user",)
