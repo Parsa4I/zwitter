@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .validators import validate_unique_email
 from accounts.models import User, Following
-from api.posts.serializers import PostInlineSerializer
 
 
 class UserRegisterSerializer(serializers.Serializer):
@@ -22,30 +21,30 @@ class OTPCodeSerializer(serializers.Serializer):
     otp_code = serializers.IntegerField(min_value=1000, max_value=9999)
 
 
-class UserSerializer(serializers.ModelSerializer):
-    followers_count = serializers.SerializerMethodField()
-    following_count = serializers.SerializerMethodField()
-    posts = PostInlineSerializer(many=True)
-
-    class Meta:
-        model = User
-        fields = ("username", "email", "followers_count", "following_count", "posts")
-
-    def get_followers_count(self, obj):
-        return Following.objects.filter(followed=obj, accepted=True).count()
-
-    def get_following_count(self, obj):
-        return Following.objects.filter(follower=obj, accepted=True).count()
-
-
-class UserSerializerInline(serializers.ModelSerializer):
-    followers_count = serializers.SerializerMethodField()
-    following_count = serializers.SerializerMethodField()
+class UserInlineSerializer(serializers.ModelSerializer):
     url = serializers.HyperlinkedIdentityField("api_accounts:user")
 
     class Meta:
         model = User
-        fields = ("username", "email", "followers_count", "following_count", "url")
+        fields = ("username", "email", "url")
+
+
+class UserSerializer(serializers.ModelSerializer):
+    followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = (
+            "username",
+            "email",
+            "is_active",
+            "is_admin",
+            "is_superuser",
+            "last_login",
+            "followers_count",
+            "following_count",
+        )
 
     def get_followers_count(self, obj):
         return Following.objects.filter(followed=obj, accepted=True).count()
@@ -61,8 +60,8 @@ class FollowRequestSerializer(serializers.ModelSerializer):
 
 
 class FollowingSerializer(serializers.ModelSerializer):
-    follower = UserSerializerInline()
-    followed = UserSerializerInline()
+    follower = UserInlineSerializer()
+    followed = UserInlineSerializer()
 
     class Meta:
         model = Following
