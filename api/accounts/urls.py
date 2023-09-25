@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 from rest_framework_simplejwt.views import (
@@ -60,6 +60,7 @@ urlpatterns = [
         views.DeclineFollowRequestAPIView.as_view(),
         name="decline_follow_request",
     ),
-    # path('mute/<int:pk>/',),
-    # path('is-followed',),
+    path("mute/<int:pk>/", views.MuteAPIView.as_view(), name="mute"),
+    path("unmute/<int:pk>/", views.UnMuteAPIView.as_view(), name="unmute"),
+    path("is-followed", views.IsFollowedAPIView.as_view(), name="is_followed"),
 ]

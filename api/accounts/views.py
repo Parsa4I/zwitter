@@ -203,3 +203,40 @@ class DeclineFollowRequestAPIView(APIView):
         )
         follow_request.delete()
         return Response({"message": "Follow request declined."}, status.HTTP_200_OK)
+
+
+class MuteAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request, pk):
+        followed = get_object_or_404(User, pk=pk)
+        following = get_object_or_404(
+            Following, followed=followed, follower=request.user
+        )
+        following.mute = True
+        following.save()
+        return Response({"message": "User muted."}, status.HTTP_200_OK)
+
+
+class UnMuteAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def put(self, request, pk):
+        followed = get_object_or_404(User, pk=pk)
+        following = get_object_or_404(
+            Following, followed=followed, follower=request.user
+        )
+        following.mute = False
+        following.save()
+        return Response({"message": "User unmuted."}, status.HTTP_200_OK)
+
+
+class IsFollowedAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, pk):
+        followed = get_object_or_404(User, pk=pk)
+        is_followed = Following.objects.filter(
+            follower=request.user, followed=followed, accepted=True
+        ).exists()
+        return Response({"is_followed": is_followed}, status.HTTP_200_OK)

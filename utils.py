@@ -1,7 +1,7 @@
 import random
 from django.core.mail import send_mail
 from django.conf import settings
-from posts.models import Tag, Post, PostView
+from posts.models import Tag, PostView
 from notifications.models import Notification
 from accounts.models import Following
 
