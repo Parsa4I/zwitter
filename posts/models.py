@@ -64,9 +64,17 @@ class Post(models.Model):
                 self.post_type = self.VIDEO
             elif self.reposted_from:
                 self.post_type = self.REPOST
+                self.reposted_from = (
+                    self.reposted_from.reposted_from
+                    if self.reposted_from.post_type == "REP"
+                    else self.reposted_from
+                )
+                this_post = super().save(*args, **kwargs)
+                self.tags.set(self.reposted_from.tags.all())
+                return this_post
             else:
                 self.post_type = self.TEXT
-            super().save(*args, **kwargs)
+                return super().save(*args, **kwargs)
         else:
             raise ValidationError("A post can't have 2 media files at the same time.")
 
