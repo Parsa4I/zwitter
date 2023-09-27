@@ -1,6 +1,9 @@
 from posts.models import Post, Like, Tag, PostView
 from rest_framework import serializers
 from api.accounts.serializers import UserInlineSerializer
+from django.core.validators import FileExtensionValidator
+from rest_framework.exceptions import ValidationError
+from utils import get_tags_list
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -18,6 +21,8 @@ class PostInlineSerializer(serializers.ModelSerializer):
         "api_posts:post_detail", read_only=True
     )
     root = serializers.HyperlinkedRelatedField("api_posts:post_detail", read_only=True)
+    reposts_count = serializers.SerializerMethodField()
+    replies_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
@@ -34,6 +39,8 @@ class PostInlineSerializer(serializers.ModelSerializer):
             "reposted_from",
             "likes_count",
             "views_count",
+            "reposts_count",
+            "replies_count",
             "url",
         )
 
@@ -43,6 +50,12 @@ class PostInlineSerializer(serializers.ModelSerializer):
     def get_views_count(self, obj):
         return PostView.objects.filter(post=obj).count()
 
+    def get_reposts_count(self, obj):
+        return Post.objects.filter(reposted_from=obj).count()
+
+    def get_replies_count(self, obj):
+        return obj.replies.count()
+
 
 class PostSerializer(PostInlineSerializer):
     user = UserInlineSerializer()
@@ -50,3 +63,17 @@ class PostSerializer(PostInlineSerializer):
     class Meta:
         model = Post
         fields = PostInlineSerializer.Meta.fields + ("user",)
+
+
+class PostCreateSerializer(serializers.Serializer):
+    body = serializers.CharField()
+    image = serializers.ImageField(required=False)
+    video = serializers.FileField(
+        required=False,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=["MOV", "avi", "mp4", "webm", "mkv"]
+            )
+        ],
+    )
+    tags = serializers.CharField(required=False)
