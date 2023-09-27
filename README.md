@@ -2,7 +2,7 @@
 This is a Django website, made for learning/practice purposes. It is aimed to function somewhat like Twitter. Requirements are listed on [requirements.txt](https://github.com/Parsa4I/zwitter/blob/main/requirements.txt).
 
 ## Features
-- Complete user authentication system
+- Complete user authentication
 - Posting text/image/video
 - Reposting
 - Hashtags
@@ -16,6 +16,7 @@ This is a Django website, made for learning/practice purposes. It is aimed to fu
 - Cache (Using Redis)
 - Connecting to a cloud storage for uploading media files
 - Async tasks using Celery and RabbitMQ
+- Complete REST API (Django Rest Framework)
 
 ## Setup and Usage
 
