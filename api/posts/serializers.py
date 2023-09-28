@@ -12,7 +12,7 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ("pk", "title")
 
 
-class PostInlineSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     views_count = serializers.SerializerMethodField()
@@ -23,6 +23,7 @@ class PostInlineSerializer(serializers.ModelSerializer):
     root = serializers.HyperlinkedRelatedField("api_posts:post_detail", read_only=True)
     reposts_count = serializers.SerializerMethodField()
     replies_count = serializers.SerializerMethodField()
+    user = UserInlineSerializer()
 
     class Meta:
         model = Post
@@ -34,6 +35,7 @@ class PostInlineSerializer(serializers.ModelSerializer):
             "post_type",
             "created",
             "updated",
+            "user",
             "tags",
             "root",
             "reposted_from",
@@ -57,15 +59,7 @@ class PostInlineSerializer(serializers.ModelSerializer):
         return obj.replies.count()
 
 
-class PostSerializer(PostInlineSerializer):
-    user = UserInlineSerializer()
-
-    class Meta:
-        model = Post
-        fields = PostInlineSerializer.Meta.fields + ("user",)
-
-
-class PostCreateSerializer(serializers.Serializer):
+class PostCreateUpdateSerializer(serializers.Serializer):
     body = serializers.CharField()
     image = serializers.ImageField(required=False)
     video = serializers.FileField(
@@ -77,3 +71,47 @@ class PostCreateSerializer(serializers.Serializer):
         ],
     )
     tags = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        if attrs.get("image") and attrs.get("video"):
+            raise ValidationError("A post can only have one media file.")
+        return super().validate(attrs)
+
+    def create(self, validated_data):
+        post = Post.objects.create(
+            user=self.context["request"].user,
+            body=validated_data["body"],
+            image=validated_data.get("image"),
+            video=validated_data.get("video"),
+        )
+        post.tags.set(get_tags_list(validated_data.get("tags", "")))
+        post.save()
+
+        return post
+
+    def update(self, instance, validated_data):
+        instance.body = validated_data.get("body", instance.body)
+
+        image = validated_data.get("image")
+        video = validated_data.get("video")
+
+        if instance.post_type == "IMG":
+            if video:
+                instance.image = None
+                instance.video = video
+            else:
+                instance.image = image
+
+        if instance.post_type == "VID":
+            if image:
+                instance.video = None
+                instance.image = image
+            else:
+                instance.video = video
+
+        tags = validated_data.get("tags", "")
+        if tags:
+            instance.tags = get_tags_list(tags)
+
+        instance.save()
+        return instance

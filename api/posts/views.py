@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework import generics
 from rest_framework.response import Response
 from posts.models import Post, Tag, Like
-from .serializers import PostSerializer, PostCreateSerializer
+from .serializers import PostSerializer, PostCreateUpdateSerializer
 from accounts.models import User, Following
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
@@ -10,7 +10,6 @@ from utils import get_tags_list
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from django.db.models import Q
-from itertools import chain
 
 
 class PostAPIView(APIView):
@@ -71,22 +70,16 @@ class PostCreateAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        serializer = PostCreateSerializer(data=request.data)
+        serializer = PostCreateUpdateSerializer(
+            data=request.data, context={"request": request}
+        )
         if serializer.is_valid():
-            data = serializer.validated_data
-            if data.get("image") and data.get("video"):
-                raise ValidationError("A post can only have one media file.")
-            post = Post.objects.create(
-                user=request.user,
-                body=data["body"],
-                image=data.get("image"),
-                video=data.get("video"),
-            )
-            post.tags.set(get_tags_list(data.get("tags", "")))
-            post.save()
+            post = serializer.save()
+
             return Response(
                 {"message": f"{post.post_type} post created."}, status.HTTP_201_CREATED
             )
+
         return Response({"errors": serializer.errors}, status.HTTP_400_BAD_REQUEST)
 
 
@@ -108,7 +101,7 @@ class ReplyAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request, pk):
-        serializer = PostCreateSerializer(data=request.data)
+        serializer = PostCreateUpdateSerializer(data=request.data)
         if serializer.is_valid():
             root = get_object_or_404(Post, pk=pk)
             data = serializer.validated_data
@@ -163,33 +156,17 @@ class DeletePostAPIView(APIView):
 class UpdatePostAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def patch(self, request, pk):
-        serializer = PostCreateSerializer(data=request.data)
+    def put(self, request, pk):
+        post = get_object_or_404(Post, pk=pk, user=request.user)
+        serializer = PostCreateUpdateSerializer(
+            instance=post, data=request.data, partial=True
+        )
+
         if serializer.is_valid():
-            data = serializer.validated_data
-            post = get_object_or_404(Post, pk=pk, user=request.user)
-
-            if data.get("body"):
-                post.body = data.get("body")
-
-            if data.get("image") and data.get("video"):
-                raise ValidationError("A post can't have more than one media file.")
-
-            if data.get("image"):
-                post.video = None
-                post.image = data.get("image")
-
-            if data.get("video"):
-                post.image = None
-                post.video = data.get("video")
-
-            if data.get("tags"):
-                tags = get_tags_list(data.get("tags"))
-                post.tags.set(tags)
-
-            post.save()
-
+            serializer.save()
             return Response({"message": "Post updated"}, status.HTTP_200_OK)
+
+        return Response({"errors": serializer.errors}, status.HTTP_400_BAD_REQUEST)
 
 
 class IsLikedAPIView(APIView):
