@@ -266,7 +266,7 @@ class AcceptFollow(LoginRequiredMixin, View):
             notify(
                 following.follower,
                 "Follow Request Accepted",
-                f'<a href="{following.followed.get_absolute_url()}">following.followed</a> has accepted your follow request.',
+                f'<a href="{following.followed.get_absolute_url()}">{following.followed}</a> has accepted your follow request.',
             )
             return redirect("accounts:follow_requests")
         return redirect("accounts:profile", pk=reqeust.user.pk)
@@ -280,7 +280,7 @@ class DeclineFollow(LoginRequiredMixin, View):
             notify(
                 following.follower,
                 "Follow Request Declined",
-                f'<a href="{following.followed.get_absolute_url()}">following.followed</a> has declined your follow request.',
+                f'<a href="{following.followed.get_absolute_url()}">{following.followed}</a> has declined your follow request.',
             )
             return redirect("accounts:follow_requests")
         return redirect("accounts:profile", pk=reqeust.user.pk)
